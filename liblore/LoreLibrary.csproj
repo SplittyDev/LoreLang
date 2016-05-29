@@ -42,8 +42,12 @@
     <Compile Include="Parser\IVisitor.cs" />
     <Compile Include="Parser\AstVisitor.cs" />
     <Compile Include="Parser\AstNode.cs" />
-    <Compile Include="Parser\CodeBlock.cs" />
     <Compile Include="Parser\ParserException.cs" />
+    <Compile Include="Parser\Capture.cs" />
+    <Compile Include="Parser\AST\CodeBlock.cs" />
+    <Compile Include="Parser\AST\AstRoot.cs" />
+    <Compile Include="Parser\FunctionParameter.cs" />
+    <Compile Include="Parser\AST\Function.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lexer\" />

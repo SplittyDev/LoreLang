@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Lore {
 
@@ -42,29 +43,113 @@ namespace Lore {
 
             // Try parsing a keyword
             if (current.Is (LoreToken.Keyword)) {
-                // TODO: Implement this
+                switch (current.Value) {
+                case "fn":
+                    return ParseFunction ();
+                }
             }
 
             // Try parsing a capturing block
-            // Example: [captures] { code }
             if (current.Is (LoreToken.OpenBracket)) {
-                // return ParseBlockWithCaptures ();
+                return ParseBlockWithCaptures ();
             }
 
             // Try parsing a pure block
-            // Example: { code }
             if (current.Is (LoreToken.OpenBrace)) {
-                return ParseBlockWithoutCaptures ();
+                return ParsePureBlock ();
             }
 
-            // TODO: Finish this
             throw new ParserException (unit, $"Unexpected token: '{current.Value}' ({current.Token})");
         }
 
-        AstNode ParseBlockWithoutCaptures () {
+        /*
+         *  fn name (parameters...) [captures...] {
+         *      code...
+         *  }
+         */
+        Function ParseFunction () {
+            var function = new Function (unit.Location);
+            unit.Expect (LoreToken.Keyword, "fn");
+
+            // Read the name of the function
+            var name = unit.Expect (LoreToken.Identifier);
+            function.SetName (name.Value);
+
+            // Read the parameter list
+            if (unit.Match (LoreToken.OpenParen)) {
+                function.SetParameters (ParseParameterList ());
+            }
+
+            // Read the function body
+            var body = ParseBlock ();
+            function.SetBody (body);
+
+            // Return the function
+            Console.WriteLine (function);
+            return function;
+        }
+
+        /*
+         * (parameters...)
+         */
+        List<FunctionParameter> ParseParameterList () {
+            var parameters = new List<FunctionParameter> ();
+            unit.Expect (LoreToken.OpenParen);
+            while (!unit.Match (LoreToken.CloseParen)) {
+                var lex = unit.Expect (LoreToken.Identifier);
+                var parameter = FunctionParameter.Create (lex.Value);
+                parameters.Add (parameter);
+            }
+            unit.Expect (LoreToken.CloseParen);
+            return parameters;
+        }
+
+        /*
+         *  { code... }
+         * or
+         *  [captures...] { code... }
+         */
+        CodeBlock ParseBlock () {
+            if (unit.Match (LoreToken.OpenBracket)) {
+                return ParseBlockWithCaptures ();
+            }
+            return ParsePureBlock ();
+        }
+
+        /*  
+         *  { code... }
+         */
+        CodeBlock ParsePureBlock () {
             var code = new CodeBlock (unit.Location);
-            // TODO: Implement this
-            return null;
+            unit.Expect (LoreToken.OpenBrace);
+            while (!unit.Match (LoreToken.CloseBrace)) {
+                code.AddChild (ParseStatement ());
+            }
+            unit.Expect (LoreToken.CloseBrace);
+            return code;
+        }
+
+        /*
+         *  [captures...] { code... }
+         */
+        CodeBlock ParseBlockWithCaptures () {
+            var capturedBlock = new CodeBlock (unit.Location);
+
+            // Parse the captures
+            unit.Expect (LoreToken.OpenBracket);
+            while (!unit.Match (LoreToken.CloseBracket)) {
+                var lex = unit.Read ();
+                var capture = Capture.Create (unit, lex);
+                capturedBlock.AddCapture (capture);
+            }
+            unit.Expect (LoreToken.CloseBracket);
+
+            // Parse the actual block
+            var pureBlock = ParsePureBlock ();
+
+            // Merge the block with the captures
+            capturedBlock.Merge (pureBlock);
+            return capturedBlock;
         }
    }
 }

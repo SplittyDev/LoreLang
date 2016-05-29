@@ -37,6 +37,9 @@
     <Reference Include="codeaddicts.libArgument">
       <HintPath>..\..\libArgument\bin\codeaddicts.libArgument.dll</HintPath>
     </Reference>
+    <Reference Include="LexDotNet">
+      <HintPath>..\..\LexDotNet\bin\Release\LexDotNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\liblore\LoreLibrary.csproj">

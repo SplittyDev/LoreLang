@@ -16,6 +16,12 @@ namespace LoreCompiler {
 
             // Parse command-line arguments
             var options = ArgumentParser.Parse<Options> (args);
+
+            // Create the compiler wrapper
+            var compiler = new LoreCompiler (options);
+
+            // Compile the sources
+            compiler.Run ();
         }
     }
 }

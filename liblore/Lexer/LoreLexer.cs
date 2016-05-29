@@ -16,8 +16,14 @@ namespace Lore {
         /// Initializes a new instance of the <see cref="LoreLexer"/> class.
         /// </summary>
         /// <param name="unit">Unit.</param>
-        public LoreLexer (SourceUnit unit) : base (unit) {
+        LoreLexer (SourceUnit unit) : base (unit) {
         }
+
+        /// <summary>
+        /// Create a new instance of the <see cref="LoreLexer"/> class.
+        /// </summary>
+        /// <param name="unit">Unit.</param>
+        public static LoreLexer Create (SourceUnit unit) => new LoreLexer (unit);
 
         /// <summary>
         /// Configures the scanners.

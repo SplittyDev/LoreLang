@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using LexDotNet;
+using Lore;
 
 namespace LoreCompiler {
 
@@ -18,6 +21,18 @@ namespace LoreCompiler {
         /// <param name="options">Options.</param>
         public LoreCompiler (Options options) {
             this.options = options;
+        }
+
+        public void Run () {
+            Compile (SourceUnit.FromFile (options.Input));
+        }
+
+        void Compile (SourceUnit sunit) {
+            var lexer = LoreLexer.Create (sunit);
+            var lexemes = lexer.Tokenize ();
+            var punit = ParsingUnit.Create (lexemes);
+            var parser = LoreParser.Create (punit);
+            var ast = parser.Parse ();
         }
     }
 }

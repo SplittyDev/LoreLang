@@ -141,8 +141,9 @@ namespace Lore {
         /// </summary>
         /// <param name="token">Token.</param>
         public Lexeme<LoreToken> Expect (LoreToken token) {
+            var current = Current;
             if (Accept (token)) {
-                return Current;
+                return current;
             }
             if (!See ()) {
                 throw new ParserException (this, "Unexpected end of file.");
@@ -156,8 +157,9 @@ namespace Lore {
         /// </summary>
         /// <param name="strval">Strval.</param>
         public Lexeme<LoreToken> Expect (string strval) {
+            var current = Current;
             if (Accept (strval)) {
-                return Current;
+                return current;
             }
             if (!See ()) {
                 throw new ParserException (this, "Unexpected end of file.");
@@ -172,8 +174,9 @@ namespace Lore {
         /// <param name="token">Token.</param>
         /// <param name="strval">Strval.</param>
         public Lexeme<LoreToken> Expect (LoreToken token, string strval) {
+            var current = Current;
             if (Accept (token, strval)) {
-                return Current;
+                return current;
             }
             if (!See ()) {
                 throw new ParserException (this, "Unexpected end of file.");

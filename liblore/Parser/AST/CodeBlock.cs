@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LexDotNet;
 
 namespace Lore {
@@ -10,16 +11,28 @@ namespace Lore {
     public sealed class CodeBlock : AstNode {
 
         /// <summary>
+        /// The captures.
+        /// </summary>
+        public readonly List<Capture> Captures;
+
+        /// <summary>
         /// The children.
         /// </summary>
-        readonly List<AstNode> children;
+        readonly List<AstNode> Children;
+
+        /// <summary>
+        /// Gets whether the code block captures anything.
+        /// </summary>
+        /// <value>Whether the code block captures anything.</value>
+        public bool HasCaptures => Captures.Count > 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CodeBlock"/> class.
         /// </summary>
         /// <param name="location">Location.</param>
         public CodeBlock (SourceLocation location) : base (location) {
-            children = new List<AstNode> ();
+            Captures = new List<Capture> ();
+            Children = new List<AstNode> ();
         }
 
         /// <summary>
@@ -28,7 +41,25 @@ namespace Lore {
         /// <returns>The child.</returns>
         /// <param name="node">Node.</param>
         public void AddChild (AstNode node) {
-            children.Add (node);
+            Children.Add (node);
+        }
+
+        /// <summary>
+        /// Adds a capture to the node.
+        /// </summary>
+        /// <returns>The capture.</returns>
+        /// <param name="capture">Capture.</param>
+        public void AddCapture (Capture capture) {
+            Captures.Add (capture);
+        }
+
+        /// <summary>
+        /// Merge this code block with another one.
+        /// </summary>
+        /// <param name="other">The other code block.</param>
+        public void Merge (CodeBlock other) {
+            Captures.AddRange (other.Captures.GroupBy (c => c.Identifier).Select (g => g.First ()));
+            Children.AddRange (other.Children);
         }
 
         /// <summary>
@@ -45,7 +76,7 @@ namespace Lore {
         /// <returns>The children.</returns>
         /// <param name="visitor">Visitor.</param>
         public override void VisitChildren (AstVisitor visitor) {
-            children.ForEach (child => child.Visit (visitor));
+            Children.ForEach (child => child.Visit (visitor));
         }
     }
 }

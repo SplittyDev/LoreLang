@@ -7,6 +7,9 @@ namespace LoreCompiler {
     /// Options.
     /// </summary>
     public class Options {
+
+        [Argument ("-i")]
+        public string Input;
     }
 }
 

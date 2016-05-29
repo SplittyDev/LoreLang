@@ -16,7 +16,20 @@ namespace LoreTests {
         /// </summary>
         /// <returns>The lexer.</returns>
         /// <param name="source">Source.</param>
-        public static LoreLexer GrabLexer (string source) => new LoreLexer (SourceUnit.FromSource (source));
+        public static LoreLexer GrabLexer (string source) => LoreLexer.Create (SourceUnit.FromSource (source));
+
+        /// <summary>
+        /// Grabs a new parser for the specified source.
+        /// </summary>
+        /// <returns>The parser.</returns>
+        /// <param name="source">Source.</param>
+        public static LoreParser GrabParser (string source) {
+            var lexer = GrabLexer (source);
+            var lexemes = lexer.Tokenize ();
+            var unit = ParsingUnit.Create (lexemes);
+            var parser = LoreParser.Create (unit);
+            return parser;
+        }
     }
     
     [TestFixture]
@@ -103,6 +116,20 @@ namespace LoreTests {
                 Assert.Fail (e.Message);
             }
             Assert.DoesNotThrow (() => actual = Support.GrabLexer (source).Tokenize ());
+        }
+    }
+
+    [TestFixture]
+    public class ParserTest {
+        
+        [Test]
+        public void TestParser () {
+            const string source = @"
+            fn hello (arg1) {
+            }
+            ";
+            var parser = Support.GrabParser (source);
+            var ast = parser.Parse ();
         }
     }
 }

@@ -7,6 +7,8 @@ namespace Lore {
     /// </summary>
     public abstract class AstVisitor {
 
-        public virtual void Accept (CodeBlock root) { }
+        public virtual void Accept (AstRoot root) { }
+        public virtual void Accept (CodeBlock block) { }
+        public virtual void Accept (Function func) { }
     }
 }
