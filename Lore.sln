@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoreCompiler", "Lore\LoreCompiler.csproj", "{85375546-7484-497A-B092-3A11C6304228}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoreLibrary", "liblore\LoreLibrary.csproj", "{1E8312A0-CBD4-4A86-B90C-CCE6233EBE15}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85375546-7484-497A-B092-3A11C6304228}.Debug|x86.ActiveCfg = Debug|x86
+		{85375546-7484-497A-B092-3A11C6304228}.Debug|x86.Build.0 = Debug|x86
+		{85375546-7484-497A-B092-3A11C6304228}.Release|x86.ActiveCfg = Release|x86
+		{85375546-7484-497A-B092-3A11C6304228}.Release|x86.Build.0 = Release|x86
+		{1E8312A0-CBD4-4A86-B90C-CCE6233EBE15}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1E8312A0-CBD4-4A86-B90C-CCE6233EBE15}.Debug|x86.Build.0 = Debug|Any CPU
+		{1E8312A0-CBD4-4A86-B90C-CCE6233EBE15}.Release|x86.ActiveCfg = Release|Any CPU
+		{1E8312A0-CBD4-4A86-B90C-CCE6233EBE15}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
