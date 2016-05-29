@@ -8,6 +8,8 @@ namespace Lore {
     public enum LoreToken {
         None,
         Identifier,
+        IntLiteral,
+        FloatLiteral,
     }
 }
 
