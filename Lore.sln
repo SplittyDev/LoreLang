@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoreCompiler", "Lore\LoreCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoreLibrary", "liblore\LoreLibrary.csproj", "{1E8312A0-CBD4-4A86-B90C-CCE6233EBE15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoreTests", "LoreTests\LoreTests.csproj", "{8D020F87-3671-4416-A9AD-43612D0131E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -19,5 +21,9 @@ Global
 		{1E8312A0-CBD4-4A86-B90C-CCE6233EBE15}.Debug|x86.Build.0 = Debug|Any CPU
 		{1E8312A0-CBD4-4A86-B90C-CCE6233EBE15}.Release|x86.ActiveCfg = Release|Any CPU
 		{1E8312A0-CBD4-4A86-B90C-CCE6233EBE15}.Release|x86.Build.0 = Release|Any CPU
+		{8D020F87-3671-4416-A9AD-43612D0131E5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8D020F87-3671-4416-A9AD-43612D0131E5}.Debug|x86.Build.0 = Debug|Any CPU
+		{8D020F87-3671-4416-A9AD-43612D0131E5}.Release|x86.ActiveCfg = Release|Any CPU
+		{8D020F87-3671-4416-A9AD-43612D0131E5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
