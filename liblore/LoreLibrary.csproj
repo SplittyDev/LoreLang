@@ -36,9 +36,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Lexer\LoreLexer.cs" />
     <Compile Include="Lexer\LoreToken.cs" />
+    <Compile Include="Lexer\LoreLexerConstants.cs" />
+    <Compile Include="Parser\LoreParser.cs" />
+    <Compile Include="Parser\ParsingUnit.cs" />
+    <Compile Include="Parser\IVisitor.cs" />
+    <Compile Include="Parser\AstVisitor.cs" />
+    <Compile Include="Parser\AstNode.cs" />
+    <Compile Include="Parser\CodeBlock.cs" />
+    <Compile Include="Parser\ParserException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lexer\" />
+    <Folder Include="Parser\" />
+    <Folder Include="Parser\AST\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

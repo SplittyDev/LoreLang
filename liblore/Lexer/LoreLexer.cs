@@ -13,7 +13,7 @@ namespace Lore {
     public class LoreLexer : LexerBase<LoreToken> {
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Lore.LoreLexer"/> class.
+        /// Initializes a new instance of the <see cref="LoreLexer"/> class.
         /// </summary>
         /// <param name="unit">Unit.</param>
         public LoreLexer (SourceUnit unit) : base (unit) {
@@ -24,11 +24,25 @@ namespace Lore {
         /// </summary>
         /// <returns>The scanners.</returns>
         protected override void ConfigureScanners () {
+            Scanners.Discard (ReadMultilineComment).If (IsMultilineComment);
+            Scanners.Discard (ReadComment).If (IsComment);
             Scanners.Scan (ReadIdentifier).If (IsIdentifier);
             Scanners.Scan (ReadNumber).If (IsNumber);
+            Scanners.Scan (ReadOperator).If (IsOperator);
+            Scanners.Scan ('(').As (LoreToken.OpenParen);
+            Scanners.Scan (')').As (LoreToken.CloseParen);
+            Scanners.Scan ('{').As (LoreToken.OpenBrace);
+            Scanners.Scan ('}').As (LoreToken.CloseBrace);
+            Scanners.Scan ('[').As (LoreToken.OpenBracket);
+            Scanners.Scan (']').As (LoreToken.CloseBracket);
+            Scanners.Scan (',').As (LoreToken.Comma);
+            Scanners.Scan (':').As (LoreToken.Colon);
+            Scanners.Scan (';').As (LoreToken.Semicolon);
         }
 
         #region Predicates
+        bool IsComment (SourceUnit source) => source.See (1) && source.Peeks (2) == "//";
+        bool IsMultilineComment (SourceUnit source) => source.See (1) && source.Peeks (2) == "/*";
         bool IsIdentifier (char chr) => char.IsLetter (chr) || chr == '_';
         bool IsNumber (SourceUnit unit) {
             var chr1 = unit.Peek ();
@@ -45,9 +59,55 @@ namespace Lore {
             // Invalid
             return false;
         }
+        bool IsOperator (char chr) => LoreLexerConstants.OperatorChars.Contains (chr);
         #endregion
 
         #region Scanners
+        void ReadComment (SourceUnit source) => source.SkipLine ();
+        void ReadMultilineComment (SourceUnit source) {
+            source.Skip (2);
+            string nn = string.Empty;
+            while (source.See (1) && (nn = source.Peeks (2)) != "*/") {
+                source.Skip ();
+            }
+            if (nn != "*/") {
+                Throw ("Unexpected end of file.");
+            }
+            source.Skip (2);
+        }
+        void ReadOperator (SourceUnit unit, ScanResult<LoreToken> result) {
+            result.Token = LoreToken.Operator;
+            var op1 = unit.Peek ();
+            var op2 = unit.See (1) ? unit.Peeks (2) : string.Empty;
+            var op3 = unit.See (2) ? unit.Peeks (3) : string.Empty;
+            switch (op3) {
+            case "==>":
+                result.Value = op3;
+                unit.Skip (3);
+                return;
+            }
+            switch (op2) {
+            case "==":
+            case "!=":
+            case "+=":
+            case "-=":
+            case "*=":
+            case "/=":
+            case "%=":
+            case "&=":
+            case "|=":
+            case "^=":
+            case "<=":
+            case ">=":
+            case "&&":
+            case "||":
+                result.Value = op2;
+                unit.Skip (2);
+                return;
+            }
+            result.Value = op1.ToString ();
+            unit.Skip ();
+        }
         void ReadIdentifier (SourceUnit unit, ScanResult<LoreToken> result) {
             var accum = new StringBuilder ();
             var chr = unit.Peek ();
@@ -58,8 +118,14 @@ namespace Lore {
                 }
                 chr = unit.Peek ();
             }
-            result.Value = accum.ToString ();
+            var str = accum.ToString ();
+            result.Value = str;
             result.Token = LoreToken.Identifier;
+            if (LoreLexerConstants.KeywordStrings.Contains (str)) {
+                result.Token = LoreToken.Keyword;
+            } else if (LoreLexerConstants.OperatorStrings.Contains (str)) {
+                result.Token = LoreToken.Operator;
+            }
         }
         void ReadNumber (SourceUnit unit, ScanResult<LoreToken> result) {
             const string HexChars = "abcdefABCDEF";
@@ -76,7 +142,7 @@ namespace Lore {
                 ishex = true;
                 unit.Skip (2);
             }
-            if (!unit.See ()) {
+            if (!unit.See (0)) {
                 Throw ("Unexpected end of file.");
             }
             while (unit.See (0) && (chr = unit.Peek ()) > 0) {
@@ -86,8 +152,10 @@ namespace Lore {
                         if (nofloatstart) {
                             Throw ("Floating-point literal must have a digit before or after the decimal point.");
                         }
-                    } else if (isfloat) {
-                        Throw ("There can only be one decimal point in a floating-point literal.");
+                    }
+                    if (isfloat) {
+                        break;
+                        // Throw ("There can only be one decimal point in a floating-point literal.");
                     }
                     isfloat = true;
                     accum.Append (unit.Read ());
@@ -102,8 +170,9 @@ namespace Lore {
                         accum.Append (unit.Read ());
                         continue;
                     }
-                    Throw ("Unexpected character in base-16 integer literal.");
-                } else if (char.IsDigit (chr)) {
+                    break;
+                }
+                if (char.IsDigit (chr)) {
                     accum.Append (unit.Read ());
                     continue;
                 }

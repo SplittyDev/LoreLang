@@ -36,24 +36,25 @@ namespace LoreTests {
 
         [Test]
         public void TestIntegers () {
-            const string source = "1337 0x1337";
+            const string source = "1337 0x1337 25";
             LexemeCollection<LoreToken> actual = null;
             Assert.DoesNotThrow (() => actual = Support.GrabLexer (source).Tokenize ());
             Assert.That (actual?.All (tk => tk.Token == LoreToken.IntLiteral) ?? false);
             Assert.That (actual?.Any (tk => tk.Value == "1337") ?? false);
             Assert.That (actual?.Any (tk => tk.Value == "4919") ?? false);
+            Assert.That (actual?.Any (tk => tk.Value == "25") ?? false);
         }
 
         [Test]
         public void TestInvalidIntegers () {
             var source = "0x1GG";
             LexemeCollection<LoreToken> actual = null;
-            Assert.Throws<LexerException> (() => actual = Support.GrabLexer (source).Tokenize ());
+            Assert.DoesNotThrow (() => actual = Support.GrabLexer (source).Tokenize ());
         }
 
         [Test]
         public void TestFloats () {
-            const string source = ".10 13.37 73.31 1.";
+            var source = ".10 13.37 73.31 1.";
             LexemeCollection<LoreToken> actual = null;
             Assert.DoesNotThrow (() => actual = Support.GrabLexer (source).Tokenize ());
             Assert.That (actual?.All (tk => tk.Token == LoreToken.FloatLiteral) ?? false);
@@ -61,13 +62,47 @@ namespace LoreTests {
             Assert.That (actual?.Any (tk => tk.Value == "73.31") ?? false);
             Assert.That (actual?.Any (tk => tk.Value == "0.10") ?? false);
             Assert.That (actual?.Any (tk => tk.Value == "1.0") ?? false);
+            source = "0. 1..something";
+            Assert.DoesNotThrow (() => actual = Support.GrabLexer (source).Tokenize ());
         }
 
         [Test]
-        public void TestInvalidFloats () {
-            const string source = "0. 1. . .1";
+        public void TestOperators () {
+            var operators = new [] { ".", "=", "==", "!=", "<=", ">=", "^=" };
             LexemeCollection<LoreToken> actual = null;
-            Assert.Throws<LexerException> (() => actual = Support.GrabLexer (source).Tokenize ());
+            foreach (var op in operators) {
+                var source = $"a {op} b";
+                try {
+                    actual = Support.GrabLexer (source).Tokenize ();
+                } catch (LexerException e) {
+                    Assert.Fail (e.Message);
+                }
+                Assert.That (actual?.ElementAt (0).Token == LoreToken.Identifier);
+                Assert.That (actual?.ElementAt (1).Token == LoreToken.Operator);
+                Assert.That (actual?.ElementAt (1).Value == op);
+                Assert.That (actual?.ElementAt (2).Token == LoreToken.Identifier);
+            }
+        }
+
+        [Test]
+        public void TestRealProgram () {
+            const string source = @"
+            // Lore master race
+            fn print (msg) {
+                stdout.writeln (msg);
+            }
+            fn main {
+                a = 2;
+                let _print ==> [a] print (a)
+                _print ()
+            }";
+            LexemeCollection<LoreToken> actual = null;
+            try {
+                actual = Support.GrabLexer (source).Tokenize ();
+            } catch (LexerException e) {
+                Assert.Fail (e.Message);
+            }
+            Assert.DoesNotThrow (() => actual = Support.GrabLexer (source).Tokenize ());
         }
     }
 }

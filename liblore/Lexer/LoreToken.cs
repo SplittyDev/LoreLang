@@ -10,6 +10,17 @@ namespace Lore {
         Identifier,
         IntLiteral,
         FloatLiteral,
+        Operator,
+        Keyword,
+        OpenParen,
+        CloseParen,
+        OpenBrace,
+        CloseBrace,
+        OpenBracket,
+        CloseBracket,
+        Comma,
+        Colon,
+        Semicolon,
     }
 }
 
