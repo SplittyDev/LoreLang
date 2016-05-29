@@ -6,9 +6,9 @@ namespace Lore {
         
         public static readonly char [] OperatorChars = {
             '!', '%', '&', '*',
-            '+', '-', '.', '/',
-            '<', '=', '>', '?',
-            '^', '|', '~'
+            '+', '-', '/', '<',
+            '=', '>', '?', '^',
+            '|', '~'
         };
 
         public static readonly string [] OperatorStrings = {

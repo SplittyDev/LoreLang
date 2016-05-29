@@ -21,6 +21,7 @@ namespace Lore {
         Comma,
         Colon,
         Semicolon,
+        MemberAccess,
     }
 }
 
