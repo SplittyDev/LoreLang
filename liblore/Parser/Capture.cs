@@ -47,7 +47,7 @@ namespace Lore {
         /// Returns the string representation of this instance.
         /// </summary>
         /// <returns>The string representation.</returns>
-        public override string ToString () => CapturesAll ? "All" : Identifier;
+        public override string ToString () => CapturesAll ? "[ALL]" : Identifier;
     }
 }
 

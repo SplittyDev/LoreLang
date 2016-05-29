@@ -5,37 +5,31 @@ using LexDotNet;
 namespace Lore {
 
     /// <summary>
-    /// Abstract Syntax Tree Root.
+    /// Return statement node.
     /// </summary>
-    public sealed class AstRoot : AstNode {
+    public class ReturnStatement : AstNode {
 
         /// <summary>
-        /// The children.
+        /// The expression.
         /// </summary>
-        public readonly List<AstNode> Children;
+        public readonly AstNode Expression;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AstRoot"/> class.
+        /// Initializes a new instance of the <see cref="T:Lore.ReturnStatement"/> class.
         /// </summary>
         /// <param name="location">Location.</param>
-        AstRoot (SourceLocation location) : base (location) {
-            Children = new List<AstNode> ();
+        /// <param name="expr">Value.</param>
+        ReturnStatement (SourceLocation location, AstNode expr) : base (location) {
+            Expression = expr;
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="AstRoot"/> class.
+        /// Create a new instance of the <see cref="BinaryExpression"/> class.
         /// </summary>
         /// <param name="location">Location.</param>
-        public static AstRoot Create (SourceLocation location) => new AstRoot (location);
-
-        /// <summary>
-        /// Adds a child to the node.
-        /// </summary>
-        /// <returns>The child.</returns>
-        /// <param name="node">Node.</param>
-        public void AddChild (AstNode node) {
-            Children.Add (node);
-        }
+        /// <param name="expr">Value.</param>
+        public static ReturnStatement Create (SourceLocation location, AstNode expr)
+        => new ReturnStatement (location, expr);
 
         /// <summary>
         /// Visit the specified visitor.
@@ -51,7 +45,7 @@ namespace Lore {
         /// <returns>The children.</returns>
         /// <param name="visitor">Visitor.</param>
         public override void VisitChildren (AstVisitor visitor) {
-            Children.ForEach (child => child.Visit (visitor));
+            Expression.Visit (visitor);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using LexDotNet;
 
 namespace Lore {
@@ -18,7 +19,7 @@ namespace Lore {
         /// <summary>
         /// The children.
         /// </summary>
-        readonly List<AstNode> Children;
+        public readonly List<AstNode> Children;
 
         /// <summary>
         /// Gets whether the code block captures anything.
@@ -30,10 +31,16 @@ namespace Lore {
         /// Initializes a new instance of the <see cref="CodeBlock"/> class.
         /// </summary>
         /// <param name="location">Location.</param>
-        public CodeBlock (SourceLocation location) : base (location) {
+        CodeBlock (SourceLocation location) : base (location) {
             Captures = new List<Capture> ();
             Children = new List<AstNode> ();
         }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="AstRoot"/> class.
+        /// </summary>
+        /// <param name="location">Location.</param>
+        public static CodeBlock Create (SourceLocation location) => new CodeBlock (location);
 
         /// <summary>
         /// Adds a child to the node.
@@ -77,6 +84,23 @@ namespace Lore {
         /// <param name="visitor">Visitor.</param>
         public override void VisitChildren (AstVisitor visitor) {
             Children.ForEach (child => child.Visit (visitor));
+        }
+
+        /// <summary>
+        /// Returns the string representation of this instance.
+        /// </summary>
+        /// <returns>The string representation.</returns>
+        public override string ToString () {
+            var accum = new StringBuilder ();
+            accum.Append ($"[CodeBlock");
+            if (!HasCaptures) {
+                accum.Append ("; Captures: Nothing");
+            } else {
+                var captures = string.Join (", ", Captures.Select (c => c.ToString ()));
+                accum.Append ($"; Captures: {captures}");
+            }
+            accum.Append ("]");
+            return accum.ToString ();
         }
     }
 }

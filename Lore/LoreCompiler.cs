@@ -32,7 +32,12 @@ namespace LoreCompiler {
             var lexemes = lexer.Tokenize ();
             var punit = ParsingUnit.Create (lexemes);
             var parser = LoreParser.Create (punit);
-            var ast = parser.Parse ();
+            AstRoot ast;
+            try {
+                ast = parser.Parse ();
+            } catch (ParserException e) {
+                Console.WriteLine (e.Message);
+            }
         }
     }
 }

@@ -31,6 +31,15 @@
     <Reference Include="LexDotNet">
       <HintPath>..\..\LexDotNet\bin\Release\LexDotNet.dll</HintPath>
     </Reference>
+    <Reference Include="LLVM">
+      <HintPath>..\packages\LLVM.0.1.0\lib\LLVM.dll</HintPath>
+    </Reference>
+    <Reference Include="Lost.Native">
+      <HintPath>..\packages\Lost.Native.0.0.4\lib\Lost.Native.dll</HintPath>
+    </Reference>
+    <Reference Include="LLVM.NativeLibrary">
+      <HintPath>..\packages\LLVM.NativeLibrary.0.1.0.1\lib\LLVM.NativeLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -39,20 +48,52 @@
     <Compile Include="Lexer\LoreLexerConstants.cs" />
     <Compile Include="Parser\LoreParser.cs" />
     <Compile Include="Parser\ParsingUnit.cs" />
-    <Compile Include="Parser\IVisitor.cs" />
-    <Compile Include="Parser\AstVisitor.cs" />
-    <Compile Include="Parser\AstNode.cs" />
     <Compile Include="Parser\ParserException.cs" />
     <Compile Include="Parser\Capture.cs" />
     <Compile Include="Parser\AST\CodeBlock.cs" />
     <Compile Include="Parser\AST\AstRoot.cs" />
     <Compile Include="Parser\FunctionParameter.cs" />
-    <Compile Include="Parser\AST\Function.cs" />
+    <Compile Include="Parser\AST\FunctionDeclaration.cs" />
+    <Compile Include="Parser\AST\NameExpression.cs" />
+    <Compile Include="Parser\AST\Dummy.cs" />
+    <Compile Include="Parser\AST\BinaryExpression.cs" />
+    <Compile Include="Parser\BinaryOperation.cs" />
+    <Compile Include="Parser\UnaryOperation.cs" />
+    <Compile Include="Parser\AST\UnaryExpression.cs" />
+    <Compile Include="Parser\AST\CallExpression.cs" />
+    <Compile Include="Parser\AST\ListExpression.cs" />
+    <Compile Include="Parser\Visitors\AstVisitor.cs" />
+    <Compile Include="Parser\Visitors\IVisitor.cs" />
+    <Compile Include="Parser\AST\AstNode.cs" />
+    <Compile Include="Parser\AST\TupleExpression.cs" />
+    <Compile Include="Parser\ArgumentList.cs" />
+    <Compile Include="Parser\AST\AssignStatement.cs" />
+    <Compile Include="Parser\AST\LambdaExpression.cs" />
+    <Compile Include="Parser\AST\ReturnStatement.cs" />
+    <Compile Include="Parser\ParserFunctions\Block.cs" />
+    <Compile Include="Parser\ParserFunctions\ParserFuncTemplate.cs" />
+    <Compile Include="Parser\ParserFunctions\DeclArgumentList.cs" />
+    <Compile Include="Parser\ParserFunctions\Function.cs" />
+    <Compile Include="Parser\ParserFunctions\Lambda.cs" />
+    <Compile Include="Parser\ParserFunctions\AssignStatement.cs" />
+    <Compile Include="Parser\ParserFunctions\ExpressionChain.cs" />
+    <Compile Include="Parser\ParserFunctions\Call.cs" />
+    <Compile Include="Parser\ParserFunctions\Term.cs" />
+    <Compile Include="Parser\ParserFunctions\Name.cs" />
+    <Compile Include="Parser\ParserFunctions\List.cs" />
+    <Compile Include="Parser\ParserFunctions\Tuple.cs" />
+    <Compile Include="Parser\ParserFunctions\VisualizeAst.cs" />
+    <Compile Include="Parser\ParserFunctions\Integer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lexer\" />
     <Folder Include="Parser\" />
     <Folder Include="Parser\AST\" />
+    <Folder Include="Parser\Visitors\" />
+    <Folder Include="Parser\ParserFunctions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

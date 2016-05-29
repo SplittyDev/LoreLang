@@ -6,7 +6,7 @@ namespace Lore {
     /// <summary>
     /// Lore parser.
     /// </summary>
-    public class LoreParser {
+    public partial class LoreParser {
 
         /// <summary>
         /// The parsing unit.
@@ -30,11 +30,12 @@ namespace Lore {
         /// <summary>
         /// Parse the parsing unit.
         /// </summary>
-        public CodeBlock Parse () {
-            var root = new CodeBlock (unit.Location);
+        public AstRoot Parse () {
+            var root = AstRoot.Create (unit.Location);
             while (unit.See ()) {
                 root.AddChild (ParseStatement ());
             }
+            Visualize (root);
             return root;
         }
 
@@ -46,110 +47,44 @@ namespace Lore {
                 switch (current.Value) {
                 case "fn":
                     return ParseFunction ();
+                case "let":
+                    unit.Skip ();
+                    return ParseAssignment ();
                 }
             }
 
             // Try parsing a capturing block
-            if (current.Is (LoreToken.OpenBracket)) {
+            if (unit.Match (LoreToken.OpenBracket)) {
                 return ParseBlockWithCaptures ();
             }
 
             // Try parsing a pure block
-            if (current.Is (LoreToken.OpenBrace)) {
-                return ParsePureBlock ();
+            if (unit.Match (LoreToken.OpenBrace)) {
+                return ParseBlockWithoutCaptures ();
             }
+
+            // Try parsing an assign statement
+            //if (unit.See () && unit.Peek (1).Token == LoreToken.Comma) {
+            //    return ParseAssignStatement ();
+            //}
+
+            return ParseExpression ();
 
             throw new ParserException (unit, $"Unexpected token: '{current.Value}' ({current.Token})");
         }
 
-        /*
-         *  fn name (parameters...) [captures...] {
-         *      code...
-         *  }
-         */
-        Function ParseFunction () {
-            var function = new Function (unit.Location);
-            unit.Expect (LoreToken.Keyword, "fn");
-
-            // Read the name of the function
-            var name = unit.Expect (LoreToken.Identifier);
-            function.SetName (name.Value);
-
-            // Read the parameter list
-            if (unit.Match (LoreToken.OpenParen)) {
-                function.SetParameters (ParseParameterList ());
-            }
-
-            // Read the function body
-            var body = ParseBlock ();
-            function.SetBody (body);
-
-            // Return the function
-            Console.WriteLine (function);
-            return function;
-        }
-
-        /*
-         * (parameters...)
-         */
-        List<FunctionParameter> ParseParameterList () {
-            var parameters = new List<FunctionParameter> ();
+        ArgumentList ParseArgumentList () {
+            var list = ArgumentList.Create (unit.Location);
             unit.Expect (LoreToken.OpenParen);
             while (!unit.Match (LoreToken.CloseParen)) {
-                var lex = unit.Expect (LoreToken.Identifier);
-                var parameter = FunctionParameter.Create (lex.Value);
-                parameters.Add (parameter);
+                var expr = ParseExpression ();
+                list.Add (expr);
+                if (!unit.Accept (LoreToken.Comma)) {
+                    break;
+                }
             }
             unit.Expect (LoreToken.CloseParen);
-            return parameters;
-        }
-
-        /*
-         *  { code... }
-         * or
-         *  [captures...] { code... }
-         */
-        CodeBlock ParseBlock () {
-            if (unit.Match (LoreToken.OpenBracket)) {
-                return ParseBlockWithCaptures ();
-            }
-            return ParsePureBlock ();
-        }
-
-        /*  
-         *  { code... }
-         */
-        CodeBlock ParsePureBlock () {
-            var code = new CodeBlock (unit.Location);
-            unit.Expect (LoreToken.OpenBrace);
-            while (!unit.Match (LoreToken.CloseBrace)) {
-                code.AddChild (ParseStatement ());
-            }
-            unit.Expect (LoreToken.CloseBrace);
-            return code;
-        }
-
-        /*
-         *  [captures...] { code... }
-         */
-        CodeBlock ParseBlockWithCaptures () {
-            var capturedBlock = new CodeBlock (unit.Location);
-
-            // Parse the captures
-            unit.Expect (LoreToken.OpenBracket);
-            while (!unit.Match (LoreToken.CloseBracket)) {
-                var lex = unit.Read ();
-                var capture = Capture.Create (unit, lex);
-                capturedBlock.AddCapture (capture);
-            }
-            unit.Expect (LoreToken.CloseBracket);
-
-            // Parse the actual block
-            var pureBlock = ParsePureBlock ();
-
-            // Merge the block with the captures
-            capturedBlock.Merge (pureBlock);
-            return capturedBlock;
+            return list;
         }
    }
 }
