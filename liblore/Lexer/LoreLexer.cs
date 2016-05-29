@@ -44,6 +44,7 @@ namespace Lore {
             Scanners.Scan (',').As (LoreToken.Comma);
             Scanners.Scan (':').As (LoreToken.Colon);
             Scanners.Scan (';').As (LoreToken.Semicolon);
+            Scanners.Scan ('.').As (LoreToken.MemberAccess);
         }
 
         #region Predicates
@@ -93,6 +94,8 @@ namespace Lore {
                 return;
             }
             switch (op2) {
+            case "->":
+            case "=>":
             case "==":
             case "!=":
             case "+=":
