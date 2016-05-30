@@ -60,6 +60,8 @@ namespace Lore {
             Target.Visit (visitor);
             Arguments.Visit (visitor);
         }
+
+        public override string ToString () => $"[Call]";
     }
 }
 

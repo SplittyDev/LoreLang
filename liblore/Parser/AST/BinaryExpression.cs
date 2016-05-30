@@ -61,6 +61,8 @@ namespace Lore {
             Left.Visit (visitor);
             Right.Visit (visitor);
         }
+
+        public override string ToString () => $"[Binary: Op={Operation}]";
     }
 }
 

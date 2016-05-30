@@ -43,6 +43,8 @@ namespace Lore {
             } else if (root is LambdaExpression) {
                 Console.Write ($"* {root}");
                 Visualize (((LambdaExpression)root).Body, depth + 1, true);
+            } else if (root is IntegerExpression) {
+                Console.Write ($"* {root}");
             } else {
                 Console.Write ($"* {root.GetType ().Name}");
             }

@@ -37,7 +37,7 @@ namespace Lore {
         /// <param name="name">Name.</param>
         public static NameExpression Create (SourceLocation location, string name) => new NameExpression (location, name);
 
-        public override string ToString () => Name;
+        public override string ToString () => $"[Name: Value={Name}]";
     }
 }
 

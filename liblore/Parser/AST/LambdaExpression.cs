@@ -100,18 +100,14 @@ namespace Lore {
         /// <returns>The string representation.</returns>
         public override string ToString () {
             var accum = new StringBuilder ();
-            accum.Append ($"[Lambda");
-            if (!HasParameters) {
-                accum.Append ("; Parameters: None");
-            } else {
+            accum.Append ($"[Lambda:");
+            if (HasParameters) {
                 var args = string.Join (", ", parameters);
-                accum.Append ($"; Parameters: {args}");
+                accum.Append ($" Args=[{args}]");
             }
-            if (!HasCaptures) {
-                accum.Append ("; Captures: Nothing");
-            } else {
+            if (HasCaptures) {
                 var captures = string.Join (", ", body.Captures.Select (c => c.ToString ()));
-                accum.Append ($"; Captures: {captures}");
+                accum.Append ($" Captures=[{captures}]");
             }
             accum.Append ("]");
             return accum.ToString ();

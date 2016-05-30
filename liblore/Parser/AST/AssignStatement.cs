@@ -91,6 +91,8 @@ namespace Lore {
         public override void VisitChildren (AstVisitor visitor) {
             Expressions.ForEach (expr => expr.Visit (visitor));
         }
+
+        public override string ToString () => $"[Assign: To=[{string.Join (", ", Identifiers)}]]";
     }
 }
 

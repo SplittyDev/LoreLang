@@ -55,6 +55,8 @@ namespace Lore {
         public override void VisitChildren (AstVisitor visitor) {
             Child.Visit (visitor);
         }
+
+        public override string ToString () => $"[Unary: Op={Operation}]";
     }
 }
 

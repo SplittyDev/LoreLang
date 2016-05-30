@@ -92,12 +92,10 @@ namespace Lore {
         /// <returns>The string representation.</returns>
         public override string ToString () {
             var accum = new StringBuilder ();
-            accum.Append ($"[CodeBlock");
-            if (!HasCaptures) {
-                accum.Append ("; Captures: Nothing");
-            } else {
+            accum.Append ($"[CodeBlock: ");
+            if (HasCaptures) {
                 var captures = string.Join (", ", Captures.Select (c => c.ToString ()));
-                accum.Append ($"; Captures: {captures}");
+                accum.Append ($" Captures=[{captures}]");
             }
             accum.Append ("]");
             return accum.ToString ();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using LexDotNet;
 
 namespace Lore {
@@ -57,6 +58,8 @@ namespace Lore {
         public override void VisitChildren (AstVisitor visitor) {
             Arguments.ForEach (node => node.Visit (visitor));
         }
+
+        public override string ToString () => $"[List: Count={Arguments.Count}]";
     }
 }
 

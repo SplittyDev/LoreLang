@@ -22,5 +22,6 @@ namespace Lore {
         public virtual void Accept (AssignStatement stmt) { }
         public virtual void Accept (LambdaExpression lambda) { }
         public virtual void Accept (ReturnStatement stmt) { }
+        public virtual void Accept (IntegerExpression expr) { }
     }
 }

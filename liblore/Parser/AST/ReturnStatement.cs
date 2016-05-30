@@ -47,6 +47,8 @@ namespace Lore {
         public override void VisitChildren (AstVisitor visitor) {
             Expression.Visit (visitor);
         }
+
+        public override string ToString () => $"[Return: Value={Expression.ToString () ?? string.Empty}]";
     }
 }
 

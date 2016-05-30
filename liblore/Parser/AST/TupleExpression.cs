@@ -58,7 +58,7 @@ namespace Lore {
             Items.ForEach (node => node.Visit (visitor));
         }
 
-        public override string ToString () => $"[Tuple Items: {string.Join (", ", Items)}]";
+        public override string ToString () => $"[Tuple: Count={Items.Count}]";
     }
 }
 
