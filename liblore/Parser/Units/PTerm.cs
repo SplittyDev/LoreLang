@@ -22,7 +22,7 @@ namespace Lore {
 
             // Try parsing a float
             if (unit.Match (LoreToken.FloatLiteral)) {
-                throw new ParserException (unit, "Floats are not implemented.");
+                return ParseFloat ();
             }
 
             // Try parsing a list
@@ -94,7 +94,7 @@ namespace Lore {
                 }
             }
 
-            throw new ParserException (unit, "Unexpected end of term.");
+            throw LoreException.Create (unit.Location).Describe ("Unexpected end of term.");
         }
     }
 }

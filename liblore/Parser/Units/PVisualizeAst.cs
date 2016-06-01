@@ -24,18 +24,16 @@ namespace Lore {
                     Visualize (child, depth);
             } else if (root is FunctionDeclaration) {
                 Console.Write ($"* {root}");
-                Visualize (((FunctionDeclaration)root).Body, depth, true);
+                Visualize (((FunctionDeclaration)root).Body, depth + 1, true);
             } else if (root is BinaryExpression) {
-                Console.Write ($"* Binary expression");
+                Console.Write ($"* Binary expression: {((BinaryExpression)root).Operation}");
                 Visualize (((BinaryExpression)root).Left, depth + 1);
-                Visualize (((BinaryExpression)root).Operation, depth + 1);
                 Visualize (((BinaryExpression)root).Right, depth + 1);
             } else if (root is UnaryExpression) {
-                Console.Write ($"* Unary expression");
-                Visualize (((UnaryExpression)root).Operation, depth + 1);
+                Console.Write ($"* Unary expression: {((UnaryExpression)root).Operation}");
                 Visualize (((UnaryExpression)root).Child, depth + 1);
             } else if (root is NameExpression) {
-                Console.Write ($"* Variable: {((NameExpression)root).Name}");
+                Console.Write ($"* {root}");
             } else if (root is CallExpression) {
                 Console.Write ($"* Call");
                 Visualize (((CallExpression)root).Arguments, depth + 1);
@@ -45,8 +43,13 @@ namespace Lore {
                 Visualize (((LambdaExpression)root).Body, depth + 1, true);
             } else if (root is IntegerExpression) {
                 Console.Write ($"* {root}");
+            } else if (root is AssignStatement) {
+                Console.Write ($"* {root}");
+                foreach (var expr in ((AssignStatement)root).Expressions) {
+                    Visualize (expr, depth + 1);
+                }
             } else {
-                Console.Write ($"* {root.GetType ().Name}");
+                Console.Write ($"* {root}");
             }
             if (depth == 0 && !suppressNewline) {
                 Console.WriteLine ();

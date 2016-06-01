@@ -18,13 +18,13 @@ namespace Lore {
             // Function call
             if (unit.Match (LoreToken.OpenParen)) {
 
-                // Parse argument list of call
+                // Create the call expression
+                var call = CallExpression.Create (unit.Location);
+                call.SetTarget (left);
+
+                // Parse the argument list
                 var args = ParseArgumentList ();
-                var call = CallExpression.Create (
-                    location: unit.Location,
-                    target: left,
-                    arguments: args
-                );
+                call.SetArguments (args);
                 return ParseCallOrAccess (call);
             }
 

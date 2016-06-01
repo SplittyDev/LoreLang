@@ -18,7 +18,7 @@ namespace Lore {
             try {
                 intval = ulong.Parse (literal, NumberStyles.Integer);
             } catch (Exception e) {
-                throw new ParserException (unit, $"Failed to parse integer literal: ${e.Message}");
+                throw LoreException.Create (unit.Location).Describe ($"Failed to parse integer literal: ${e.Message}");
             }
 
             // Determine the size of the integer

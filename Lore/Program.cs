@@ -18,7 +18,7 @@ namespace LoreCompiler {
             var options = ArgumentParser.Parse<Options> (args);
 
             // Create the compiler wrapper
-            var compiler = new LoreCompiler (options);
+            var compiler = new LoreCompilerWrapper (options);
 
             // Compile the sources
             compiler.Run ();

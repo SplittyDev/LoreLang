@@ -30,7 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="LoreCompiler.cs" />
+    <Compile Include="LoreCompilerWrapper.cs" />
     <Compile Include="Options.cs" />
   </ItemGroup>
   <ItemGroup>

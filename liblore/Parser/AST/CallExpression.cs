@@ -12,36 +12,62 @@ namespace Lore {
         /// <summary>
         /// The target of the call.
         /// </summary>
-        public readonly AstNode Target;
+        AstNode target;
 
         /// <summary>
         /// The arguments of the call.
         /// </summary>
-        public readonly ArgumentList Arguments;
+        ArgumentList arguments;
 
         /// <summary>
         /// Gets whether the call has any arguments.
         /// </summary>
         /// <value>Whether the call has any arguments.</value>
-        public bool HasArguments => Arguments.Count > 0;
+        public bool HasArguments => arguments.Count > 0;
+
+        /// <summary>
+        /// Gets the target.
+        /// </summary>
+        /// <value>The target.</value>
+        public AstNode Target => target;
+
+        /// <summary>
+        /// Gets the arguments.
+        /// </summary>
+        /// <value>The arguments.</value>
+        public ArgumentList Arguments => arguments;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CallExpression"/> class.
         /// </summary>
         /// <param name="location">Location.</param>
-        CallExpression (SourceLocation location, AstNode target, ArgumentList arguments) : base (location) {
-            Target = target;
-            Arguments = arguments;
+        CallExpression (SourceLocation location) : base (location) {
         }
 
         /// <summary>
         /// Create a new instance of the <see cref="CallExpression"/> class.
         /// </summary>
         /// <param name="location">Location.</param>
+        public static CallExpression Create (SourceLocation location)
+        => new CallExpression (location);
+
+        /// <summary>
+        /// Sets the target.
+        /// </summary>
+        /// <returns>The target.</returns>
         /// <param name="target">Target.</param>
-        /// <param name="arguments">Arguments.</param>
-        public static CallExpression Create (SourceLocation location, AstNode target, ArgumentList arguments)
-        => new CallExpression (location, target, arguments);
+        public void SetTarget (AstNode target) {
+            this.target = target;
+        }
+
+        /// <summary>
+        /// Sets the arguments.
+        /// </summary>
+        /// <returns>The arguments.</returns>
+        /// <param name="args">Arguments.</param>
+        public void SetArguments (ArgumentList args) {
+            arguments = args;
+        }
 
         /// <summary>
         /// Visit the specified visitor.

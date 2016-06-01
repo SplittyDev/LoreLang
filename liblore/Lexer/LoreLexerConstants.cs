@@ -17,7 +17,8 @@ namespace Lore {
 
         public static readonly string [] KeywordStrings = {
             "fn",
-            "let"
+            "var",
+            "val"
         };
     }
 }

@@ -25,13 +25,13 @@ namespace Lore {
         /// <summary>
         /// The parameters.
         /// </summary>
-        List<FunctionParameter> parameters;
+        List<NamedParameter> parameters;
 
         /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        public FunctionParameter [] Parameters => parameters.ToArray ();
+        public List<NamedParameter> Parameters => parameters;
 
         /// <summary>
         /// The return type.
@@ -43,6 +43,17 @@ namespace Lore {
         /// </summary>
         /// <value>The return type.</value>
         public NameExpression ReturnType => returnType;
+
+        /// <summary>
+        /// The tuple return types.
+        /// </summary>
+        List<NameExpression> tupleReturnTypes;
+
+        /// <summary>
+        /// Gets the tuple return types.
+        /// </summary>
+        /// <value>The tuple return types.</value>
+        public List<NameExpression> TupleReturnTypes => tupleReturnTypes;
 
         /// <summary>
         /// Gets whether the function has a return type.
@@ -63,6 +74,12 @@ namespace Lore {
         public bool HasCaptures => body.HasCaptures;
 
         /// <summary>
+        /// Gets whether the function returns a tuple.
+        /// </summary>
+        /// <value>Whether the function returns a tuple.</value>
+        public bool ReturnsTuple => tupleReturnTypes.Count > 0;
+
+        /// <summary>
         /// The body of the function.
         /// </summary>
         CodeBlock body;
@@ -78,7 +95,8 @@ namespace Lore {
         /// </summary>
         /// <param name="location">Location.</param>
         FunctionDeclaration (SourceLocation location) : base (location) {
-            parameters = new List<FunctionParameter> ();
+            parameters = new List<NamedParameter> ();
+            tupleReturnTypes = new List<NameExpression> ();
         }
 
         /// <summary>
@@ -110,7 +128,7 @@ namespace Lore {
         /// </summary>
         /// <returns>The parameters.</returns>
         /// <param name="parameters">Parameters.</param>
-        public void SetParameters (List<FunctionParameter> parameters) {
+        public void SetParameters (List<NamedParameter> parameters) {
             this.parameters = parameters;
         }
 
@@ -119,7 +137,7 @@ namespace Lore {
         /// </summary>
         /// <returns>The parameters.</returns>
         /// <param name="parameters">Parameters.</param>
-        public void SetParameters (IEnumerable<FunctionParameter> parameters) {
+        public void SetParameters (IEnumerable<NamedParameter> parameters) {
             this.parameters = parameters.ToList ();
         }
 
@@ -133,11 +151,24 @@ namespace Lore {
         }
 
         /// <summary>
+        /// Sets the return tuple.
+        /// </summary>
+        /// <returns>The return tuple.</returns>
+        /// <param name="exprs">Exprs.</param>
+        public void SetReturnTuple (IEnumerable<NameExpression> exprs) {
+            tupleReturnTypes.AddRange (exprs);
+        }
+
+        /// <summary>
         /// Visit the specified visitor.
         /// </summary>
         /// <param name="visitor">Visitor.</param>
         public override void Visit (AstVisitor visitor) {
             visitor.Accept (this);
+        }
+
+        public override void VisitChildren (AstVisitor visitor) {
+            body.VisitChildren (visitor);
         }
 
         /// <summary>

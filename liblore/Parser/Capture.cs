@@ -40,7 +40,9 @@ namespace Lore {
             if (lex.Is (LoreToken.Operator) && lex.Is ("=")) {
                 return new Capture (lex.Value, capturesAll: true);
             }
-            throw new ParserException (unit, $"Not a capture: '{lex.Value}' ({lex.Token})");
+
+            // Invalid capture
+            throw LoreException.Create (unit.Location).Describe ($"Not a capture: '{lex.Value}' ({lex.Token})");
         }
 
         /// <summary>

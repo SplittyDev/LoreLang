@@ -27,13 +27,13 @@ namespace Lore {
                     lambda.SetParameters (parameters);
                 }
             } else {
-                var lst = new List<FunctionParameter> ();
+                var lst = new List<NamedParameter> ();
                 foreach (var argument in argumentList.Items) {
                     var name = argument as NameExpression;
                     if (name == null) {
-                        throw new ParserException (unit, "Invalid parameter list in lambda declaration.");
+                        throw LoreException.Create (unit.Location).Describe ($"Invalid parameter list in lambda declaration.");
                     }
-                    lst.Add (FunctionParameter.Create (name.Name));
+                    lst.Add (NamedParameter.Create (name));
                 }
                 lambda.SetParameters (lst);
             }
@@ -69,7 +69,8 @@ namespace Lore {
             else {
 
                 // Create return statement for the result of the expression
-                var retstmt = ReturnStatement.Create (unit.Location, ParseExpression ());
+                var retstmt = ReturnStatement.Create (unit.Location);
+                retstmt.SetExpression (ParseExpression ());
 
                 // Create a new block with the return statement
                 var block = CodeBlock.Create (unit.Location);

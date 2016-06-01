@@ -1,4 +1,5 @@
 ﻿using System;
+using LexDotNet;
 
 namespace Lore {
 
@@ -7,21 +8,30 @@ namespace Lore {
     /// </summary>
     public abstract class AstVisitor {
 
-        public virtual void Accept (Dummy dummy) { }
+        public SourceLocation Location;
 
-        public virtual void Accept (AstRoot root) { }
-        public virtual void Accept (CodeBlock block) { }
-        public virtual void Accept (FunctionDeclaration func) { }
-        public virtual void Accept (ArgumentList args) { }
-        public virtual void Accept (NameExpression name) { }
-        public virtual void Accept (BinaryExpression expr) { }
-        public virtual void Accept (UnaryExpression expr) { }
-        public virtual void Accept (CallExpression call) { }
-        public virtual void Accept (ListExpression args) { }
-        public virtual void Accept (TupleExpression tuple) { }
-        public virtual void Accept (AssignStatement stmt) { }
-        public virtual void Accept (LambdaExpression lambda) { }
-        public virtual void Accept (ReturnStatement stmt) { }
-        public virtual void Accept (IntegerExpression expr) { }
+        protected AstVisitor () {
+            Location = SourceLocation.Zero;
+        }
+
+        public virtual void Accept (Dummy dummy) => Update (dummy);
+
+        public virtual void Accept (AstRoot root) => Update (root);
+        public virtual void Accept (CodeBlock block) => Update (block);
+        public virtual void Accept (FunctionDeclaration func) => Update (func);
+        public virtual void Accept (ArgumentList args) => Update (args);
+        public virtual void Accept (NameExpression name) => Update (name);
+        public virtual void Accept (BinaryExpression expr) => Update (expr);
+        public virtual void Accept (UnaryExpression expr) => Update (expr);
+        public virtual void Accept (CallExpression call) => Update (call);
+        public virtual void Accept (ListExpression args) => Update (args);
+        public virtual void Accept (TupleExpression tuple) => Update (tuple);
+        public virtual void Accept (AssignStatement stmt) => Update (stmt);
+        public virtual void Accept (LambdaExpression lambda) => Update (lambda);
+        public virtual void Accept (ReturnStatement stmt) => Update (stmt);
+        public virtual void Accept (IntegerExpression expr) => Update (expr);
+        public virtual void Accept (FloatExpression expr) => Update (expr);
+
+        void Update (AstNode node) => Location = node.Location;
     }
 }

@@ -12,24 +12,36 @@ namespace Lore {
         /// <summary>
         /// The expression.
         /// </summary>
-        public readonly AstNode Expression;
+        AstNode expression;
+
+        /// <summary>
+        /// Gets the expression.
+        /// </summary>
+        /// <value>The expression.</value>
+        public AstNode Expression => expression;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Lore.ReturnStatement"/> class.
         /// </summary>
         /// <param name="location">Location.</param>
-        /// <param name="expr">Value.</param>
-        ReturnStatement (SourceLocation location, AstNode expr) : base (location) {
-            Expression = expr;
+        ReturnStatement (SourceLocation location) : base (location) {
         }
 
         /// <summary>
         /// Create a new instance of the <see cref="BinaryExpression"/> class.
         /// </summary>
         /// <param name="location">Location.</param>
-        /// <param name="expr">Value.</param>
-        public static ReturnStatement Create (SourceLocation location, AstNode expr)
-        => new ReturnStatement (location, expr);
+        public static ReturnStatement Create (SourceLocation location)
+        => new ReturnStatement (location);
+
+        /// <summary>
+        /// Sets the expression.
+        /// </summary>
+        /// <returns>The expression.</returns>
+        /// <param name="expr">Expr.</param>
+        public void SetExpression (AstNode expr) {
+            expression = expr;
+        }
 
         /// <summary>
         /// Visit the specified visitor.

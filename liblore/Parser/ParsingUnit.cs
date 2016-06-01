@@ -26,7 +26,7 @@ namespace Lore {
         /// Gets the current lexeme.
         /// </summary>
         /// <value>The current lexeme.</value>
-        public Lexeme<LoreToken> Current => Peek ();
+        public Lexeme<LoreToken> Current => See (0) ? Peek () : null;
 
         /// <summary>
         /// Gets the source location of the current lexeme.
@@ -79,14 +79,14 @@ namespace Lore {
         /// </summary>
         /// <param name="token">Token.</param>
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
-        public bool Match (LoreToken token) => Current.Token == token;
+        public bool Match (LoreToken token) => Current != null && Current.Token == token;
 
         /// <summary>
         /// Match the specified string.
         /// </summary>
         /// <param name="strval">Strval.</param>
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
-        public bool Match (string strval) => Current.Value == strval;
+        public bool Match (string strval) => Current != null && Current.Value == strval;
 
         /// <summary>
         /// Match the specified token and string.
@@ -94,7 +94,7 @@ namespace Lore {
         /// <param name="token">Token.</param>
         /// <param name="strval">Strval.</param>
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
-        public bool Match (LoreToken token, string strval) => Match (token) && Match (strval);
+        public bool Match (LoreToken token, string strval) =>Current != null && Match (token) && Match (strval);
 
         /// <summary>
         /// Read the current token.
@@ -146,10 +146,10 @@ namespace Lore {
                 return current;
             }
             if (!See ()) {
-                throw new ParserException (this, "Unexpected end of file.");
+                throw LoreException.Create (Location).Describe ("Unexpected end of file.");
             }
             var next = Read ();
-            throw new ParserException (this, $"Unexpected token: '{next.Value}' ({next.Token})");
+            throw LoreException.Create (Location).Describe ($"Unexpected token: '{next.Value}' ({next.Token})");
         }
 
         /// <summary>
@@ -162,10 +162,10 @@ namespace Lore {
                 return current;
             }
             if (!See ()) {
-                throw new ParserException (this, "Unexpected end of file.");
+                throw LoreException.Create (Location).Describe ("Unexpected end of file.");
             }
             var next = Read ();
-            throw new ParserException (this, $"Unexpected token: '{next.Value}' ({next.Token})");
+            throw LoreException.Create (Location).Describe ($"Unexpected token: '{next.Value}' ({next.Token})");
         }
 
         /// <summary>
@@ -179,10 +179,10 @@ namespace Lore {
                 return current;
             }
             if (!See ()) {
-                throw new ParserException (this, "Unexpected end of file.");
+                throw LoreException.Create (Location).Describe ("Unexpected end of file.");
             }
             var next = Read ();
-            throw new ParserException (this, $"Unexpected token: '{next.Value}' ({next.Token})");
+            throw LoreException.Create (Location).Describe ($"Unexpected token: '{next.Value}' ({next.Token})");
         }
     }
 }

@@ -14,13 +14,13 @@ namespace Lore {
         /// <summary>
         /// The parameters.
         /// </summary>
-        List<FunctionParameter> parameters;
+        List<NamedParameter> parameters;
 
         /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        public FunctionParameter [] Parameters => parameters.ToArray ();
+        public NamedParameter [] Parameters => parameters.ToArray ();
 
         /// <summary>
         /// Gets whether the function has parameters.
@@ -50,7 +50,7 @@ namespace Lore {
         /// </summary>
         /// <param name="location">Location.</param>
         LambdaExpression (SourceLocation location) : base (location) {
-            parameters = new List<FunctionParameter> ();
+            parameters = new List<NamedParameter> ();
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Lore {
         /// </summary>
         /// <returns>The parameters.</returns>
         /// <param name="parameters">Parameters.</param>
-        public void SetParameters (List<FunctionParameter> parameters) {
+        public void SetParameters (List<NamedParameter> parameters) {
             this.parameters = parameters;
         }
 
@@ -82,7 +82,7 @@ namespace Lore {
         /// </summary>
         /// <returns>The parameters.</returns>
         /// <param name="parameters">Parameters.</param>
-        public void SetParameters (IEnumerable<FunctionParameter> parameters) {
+        public void SetParameters (IEnumerable<NamedParameter> parameters) {
             this.parameters = parameters.ToList ();
         }
 

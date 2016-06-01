@@ -15,9 +15,14 @@ namespace Lore {
         bool globalscope;
 
         /// <summary>
+        /// Whether this assignment is mutable.
+        /// </summary>
+        bool mutable;
+
+        /// <summary>
         /// The identifiers.
         /// </summary>
-        public readonly List<string> Identifiers;
+        public readonly List<NamedParameter> Identifiers;
 
         /// <summary>
         /// The expressions.
@@ -31,16 +36,34 @@ namespace Lore {
         public bool Global => globalscope;
 
         /// <summary>
+        /// Gets whether this assignment is mutable.
+        /// </summary>
+        /// <value>Whether this assignment is mutable.</value>
+        public bool Mutable => mutable;
+
+        /// <summary>
         /// Whether the value is packed as a tuple.
         /// </summary>
         public bool Packed => Identifiers.Count > 1 && Expressions.Count == 1;
+
+        /// <summary>
+        /// Gets the identifier count.
+        /// </summary>
+        /// <value>The identifier count.</value>
+        public int IdentifierCount => Identifiers.Count;
+
+        /// <summary>
+        /// Gets the expression count.
+        /// </summary>
+        /// <value>The expression count.</value>
+        public int ExpressionCount => Expressions.Count;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssignStatement"/> class.
         /// </summary>
         /// <param name="location">Location.</param>
         AssignStatement (SourceLocation location) : base (location) {
-            Identifiers = new List<string> ();
+            Identifiers = new List<NamedParameter> ();
             Expressions = new List<AstNode> ();
         }
 
@@ -55,7 +78,16 @@ namespace Lore {
         /// </summary>
         /// <returns>The identifier.</returns>
         /// <param name="identifier">Identifier.</param>
-        public void AddIdentifier (string identifier) {
+        public void AddIdentifier (NameExpression identifier) {
+            Identifiers.Add (NamedParameter.Create (identifier));
+        }
+
+        /// <summary>
+        /// Adds an identifier.
+        /// </summary>
+        /// <returns>The identifier.</returns>
+        /// <param name="identifier">Identifier.</param>
+        public void AddIdentifier (NamedParameter identifier) {
             Identifiers.Add (identifier);
         }
 
@@ -76,6 +108,14 @@ namespace Lore {
         }
 
         /// <summary>
+        /// Makes the assignment mutable.
+        /// </summary>
+        /// <returns>The mutable.</returns>
+        public void MakeMutable () {
+            mutable = true;
+        }
+
+        /// <summary>
         /// Visit the specified visitor.
         /// </summary>
         /// <param name="visitor">Visitor.</param>
@@ -92,7 +132,8 @@ namespace Lore {
             Expressions.ForEach (expr => expr.Visit (visitor));
         }
 
-        public override string ToString () => $"[Assign: To=[{string.Join (", ", Identifiers)}]]";
+        public override string ToString () => $"[Assign: " +
+        $"To=[{string.Join (", ", Identifiers)}] Global={Global} Mutable={Mutable}]]";
     }
 }
 

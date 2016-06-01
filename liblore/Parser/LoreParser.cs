@@ -32,11 +32,29 @@ namespace Lore {
         /// </summary>
         public AstRoot Parse () {
             var root = AstRoot.Create (unit.Location);
-            while (unit.See ()) {
-                root.AddChild (ParseStatement ());
+            try {
+                while (unit.See ()) {
+                    root.AddChild (ParseStatement ());
+                }
+                Console.WriteLine ("Abstract Syntax Tree:");
+                Visualize (root);
+                Console.WriteLine ();
+            } catch (LoreException e) {
+                Console.WriteLine (e.Message);
+            } catch (Exception e) {
+                Console.WriteLine ("*** Severe error");
+                Console.WriteLine (e.Message);
             }
-            Visualize (root);
             return root;
+        }
+
+        internal void Synchronize () {
+            while (unit.Current != null) {
+                var tk = unit.Read ();
+                if (tk.Token == LoreToken.CloseBracket
+                    || tk.Token == LoreToken.Semicolon)
+                    return;
+            }
         }
 
         AstNode ParseStatement () {
@@ -47,9 +65,10 @@ namespace Lore {
                 switch (current.Value) {
                 case "fn":
                     return ParseFunction ();
-                case "let":
-                    unit.Skip ();
-                    return ParseAssignment ();
+                case "val":
+                    return ParseValueDeclaration ();
+                case "var":
+                    return ParseVariableDeclaration ();
                 }
             }
 
@@ -70,7 +89,11 @@ namespace Lore {
 
             return ParseExpression ();
 
-            throw new ParserException (unit, $"Unexpected token: '{current.Value}' ({current.Token})");
+            /*
+            LoreException.Create (unit.Location)
+                         .Describe ($"Unexpected token: '{current.Value}' ({current.Token})")
+                         .Throw ();
+            */
         }
 
         ArgumentList ParseArgumentList () {
