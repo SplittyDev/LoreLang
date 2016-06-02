@@ -57,7 +57,7 @@ namespace Lore {
             );
 
             // Create the actual function
-            var functionRef = LLVM.AddFunction (Module, funcdecl.Name, functionType);
+            var functionRef = LLVM.AddFunction (LLVMModule, funcdecl.Name, functionType);
             LLVM.SetLinkage (functionRef, LLVMLinkage.LLVMExternalLinkage);
 
             // Add the function prototype as a symbol
@@ -197,6 +197,8 @@ namespace Lore {
                         elem = LLVM.BuildLoad (Builder, elem, "tmpload");
                     }
                 }
+
+                Console.WriteLine ($"Elem: {elem}");
 
                 Helper.BuildOptimalReturn (Builder, elem, returnType);
             } else {

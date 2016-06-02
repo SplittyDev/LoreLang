@@ -55,36 +55,51 @@ namespace Lore {
         public bool CompareType (LLVMValueRef elem1, LLVMValueRef elem2)
         => CompareType (elem1.TypeOf (), elem2.TypeOf ());
 
+        public readonly static LLVMTypeRef VoidType = LLVM.VoidType ();
+        public readonly static LLVMTypeRef BoolType = LLVM.IntType (1);
+        public readonly static LLVMTypeRef Int8Type = LLVM.IntType (8);
+        public readonly static LLVMTypeRef UInt8Type = LLVM.IntType (10);
+        public readonly static LLVMTypeRef Int16Type = LLVM.IntType (16);
+        public readonly static LLVMTypeRef UInt16Type = LLVM.IntType (18);
+        public readonly static LLVMTypeRef Int32Type = LLVM.IntType (32);
+        public readonly static LLVMTypeRef UInt32Type = LLVM.IntType (34);
+        public readonly static LLVMTypeRef Int64Type = LLVM.IntType (64);
+        public readonly static LLVMTypeRef UInt64Type = LLVM.IntType (66);
+        public readonly static LLVMTypeRef FloatType = LLVM.FloatType ();
+        public readonly static LLVMTypeRef DoubleType = LLVM.DoubleType ();
+        public readonly static LLVMTypeRef StringType = LLVM.PointerType (Int8Type, 0);
+
         public LLVMTypeRef GetBuiltinTypeFromString (string type) {
             switch (type) {
             case "void":
-                return LLVM.VoidType ();
+                return VoidType;
             case "bool":
-                return LLVM.IntType (1);
-            case "int":
-                return LLVM.IntType (32);
-            case "uint":
-                return LLVM.IntType (34);
+                return BoolType;
+            case "char":
             case "int8":
-                return LLVM.IntType (8);
+                return Int8Type;
             case "uint8":
-                return LLVM.IntType (10);
+                return UInt8Type;
             case "int16":
-                return LLVM.IntType (16);
+                return Int16Type;
             case "uint16":
-                return LLVM.IntType (18);
+                return UInt16Type;
+            case "int":
             case "int32":
-                return LLVM.IntType (32);
+                return Int32Type;
+            case "uint":
             case "uint32":
-                return LLVM.IntType (34);
+                return UInt32Type;
             case "int64":
-                return LLVM.IntType (64);
+                return Int64Type;
             case "uint64":
-                return LLVM.IntType (66);
+                return UInt64Type;
             case "float":
-                return LLVM.FloatType ();
+                return FloatType;
             case "double":
-                return LLVM.DoubleType ();
+                return DoubleType;
+            case "string":
+                return StringType;
             }
             throw LoreException.Create (Visitor.Location).Describe ($"Unable to resolve type: '{type}'");
         }
@@ -115,6 +130,15 @@ namespace Lore {
                 // There is no need to cast
                 // Just return the element
                 return elem;
+            }
+
+            // Strings need special handling
+            if (CompareType (targetType, StringType)) {
+                LLVMValueRef indices;
+                var gep = LLVM.BuildGEP (builder, elem, out indices, 0u, "tmpgep");
+                var ptr = LLVM.ConstIntToPtr (LLVM.ConstInt (Int64Type, (ulong) elem.Pointer.ToInt64 (), new LLVMBool (0)), StringType);
+                //var ptr = LLVM.BuildPointerCast (builder, gep, StringType, "tmpptrcast");
+                return ptr;
             }
 
             string strtype1, strtype2;

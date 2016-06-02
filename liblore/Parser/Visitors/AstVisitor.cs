@@ -31,6 +31,7 @@ namespace Lore {
         public virtual void Accept (ReturnStatement stmt) => Update (stmt);
         public virtual void Accept (IntegerExpression expr) => Update (expr);
         public virtual void Accept (FloatExpression expr) => Update (expr);
+        public virtual void Accept (StringExpression expr) => Update (expr);
 
         void Update (AstNode node) => Location = node.Location;
     }

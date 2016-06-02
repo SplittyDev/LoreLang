@@ -27,7 +27,9 @@ namespace Lore {
          */
         AstNode ParseExpression () {
             var ass = ParseAssignment ();
-            unit.Accept (LoreToken.Semicolon);
+            while (unit.Match (LoreToken.Semicolon)) {
+                unit.Skip ();
+            }
             return ass;
         }
 

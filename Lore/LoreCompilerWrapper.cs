@@ -24,7 +24,7 @@ namespace LoreCompiler {
         }
 
         public void Run () {
-            var compiler = Lore.LoreLLVMCompiler.CreateFromFile (options.Input);
+            var compiler = LoreLLVMCompiler.CreateFromFile (options.Input);
             compiler.Compile ();
         }
     }

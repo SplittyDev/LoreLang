@@ -111,6 +111,15 @@ namespace Lore {
         public void AddSymbol (Symbol symbol) {
             Scopes.Peek ().AddSymbol (symbol);
         }
+
+        /// <summary>
+        /// Adds a global symbol.
+        /// </summary>
+        /// <returns>The global symbol.</returns>
+        /// <param name="symbol">Symbol.</param>
+        public void AddGlobalSymbol (Symbol symbol) {
+            GlobalScope.AddSymbol (symbol);
+        }
     }
 }
 

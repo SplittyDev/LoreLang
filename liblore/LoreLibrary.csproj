@@ -99,6 +99,11 @@
     <Compile Include="Compiler\LLVM\Units\CUnaryOp.cs" />
     <Compile Include="Compiler\LLVM\Units\CVariableDeclaration.cs" />
     <Compile Include="Compiler\LLVM\PrototypeCompiler.cs" />
+    <Compile Include="Parser\Units\PString.cs" />
+    <Compile Include="Parser\AST\StringExpression.cs" />
+    <Compile Include="Compiler\LLVM\Units\CString.cs" />
+    <Compile Include="ModuleResolver.cs" />
+    <Compile Include="LoreModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lexer\" />

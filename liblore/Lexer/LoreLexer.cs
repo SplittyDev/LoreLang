@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using System.Globalization;
 using LexDotNet;
+using System.Collections.Generic;
 
 namespace Lore {
 
@@ -33,6 +34,7 @@ namespace Lore {
             Scanners.Discard (ReadMultilineComment).If (IsMultilineComment);
             Scanners.Discard (ReadComment).If (IsComment);
             Scanners.Scan (ReadIdentifier).If (IsIdentifier);
+            Scanners.Scan (ReadString).If (IsString);
             Scanners.Scan (ReadNumber).If (IsNumber);
             Scanners.Scan (ReadOperator).If (IsOperator);
             Scanners.Scan ('(').As (LoreToken.OpenParen);
@@ -51,6 +53,8 @@ namespace Lore {
         bool IsComment (SourceUnit source) => source.See (1) && source.Peeks (2) == "//";
         bool IsMultilineComment (SourceUnit source) => source.See (1) && source.Peeks (2) == "/*";
         bool IsIdentifier (char chr) => char.IsLetter (chr) || chr == '_';
+        bool IsOperator (char chr) => LoreLexerConstants.OperatorChars.Contains (chr);
+        bool IsString (char chr) => chr == '\'' || chr == '"';
         bool IsNumber (SourceUnit unit) {
             var chr1 = unit.Peek ();
             var chr2 = unit.See () ? unit.Peek (1) : '\0';
@@ -66,7 +70,6 @@ namespace Lore {
             // Invalid
             return false;
         }
-        bool IsOperator (char chr) => LoreLexerConstants.OperatorChars.Contains (chr);
         #endregion
 
         #region Scanners
@@ -135,6 +138,12 @@ namespace Lore {
             } else if (LoreLexerConstants.OperatorStrings.Contains (str)) {
                 result.Token = LoreToken.Operator;
             }
+        }
+        void ReadString (SourceUnit source, ScanResult<LoreToken> result) {
+            char delimiter;
+            var str = JustReadString (source, out delimiter);
+            result.Token = LoreToken.StringLiteral;
+            result.Value = str;
         }
         void ReadNumber (SourceUnit unit, ScanResult<LoreToken> result) {
             const string HexChars = "abcdefABCDEF";
@@ -212,6 +221,42 @@ namespace Lore {
             }
             result.Token = isfloat ? LoreToken.FloatLiteral : LoreToken.IntLiteral;
             result.Value = ishex ? hexvalue.ToString () : str;
+        }
+        #endregion
+
+        #region Supporting functions
+        string JustReadString (SourceUnit source, out char delimiter) {
+            var accum = new StringBuilder ();
+            delimiter = source.Read ();
+            var c = source.Peek ();
+            while (source.See () && c != delimiter) {
+                c = source.Read ();
+                if (c == '\\') {
+                    var next = source.Peek ();
+                    var dict = new Dictionary<char, char> {
+                        ['"'] = '\"',
+                        ['0'] = '\0',
+                        ['a'] = '\a',
+                        ['b'] = '\b',
+                        ['f'] = '\f',
+                        ['n'] = '\n',
+                        ['r'] = '\r',
+                        ['t'] = '\t',
+                        ['\''] = '\''
+                    };
+                    if (!dict.ContainsKey (next))
+                        throw new Exception ($"Unrecognized escape sequence: '\\{next}'");
+                    c = dict [next];
+                    source.Skip ();
+                }
+                accum.Append (c);
+                c = source.Peek ();
+            }
+            if (c != delimiter)
+                throw new Exception ($"Unterminated string literal at {source.Location}");
+            if (source.See ())
+                source.Skip ();
+            return accum.ToString ();
         }
         #endregion
     }

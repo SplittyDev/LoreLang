@@ -94,6 +94,11 @@ namespace Lore {
                 }
             }
 
+            // Try parsing a string
+            if (unit.Match (LoreToken.StringLiteral)) {
+                return ParseString ();
+            }
+
             throw LoreException.Create (unit.Location).Describe ("Unexpected end of term.");
         }
     }

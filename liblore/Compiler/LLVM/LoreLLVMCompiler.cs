@@ -18,69 +18,92 @@ namespace Lore {
         readonly AstRoot Root;
 
         /// <summary>
+        /// The module.
+        /// </summary>
+        readonly LoreModule LoreModule;
+
+        /// <summary>
         /// The helpers.
         /// </summary>
-        internal readonly TypeHelper Helper;
+        readonly TypeHelper Helper;
 
         /// <summary>
         /// A false LLVM boolean.
         /// </summary>
-        internal readonly LLVMBool LLVMFalse;
+        readonly LLVMBool LLVMFalse;
 
         /// <summary>
         /// A true LLVM boolean.
         /// </summary>
-        internal readonly LLVMBool LLVMTrue;
+        readonly LLVMBool LLVMTrue;
 
         /// <summary>
         /// A LLVM NULL void pointer.
         /// </summary>
-        internal readonly LLVMValueRef LLVMNull;
+        readonly LLVMValueRef LLVMNull;
 
         /// <summary>
         /// The symbol table.
         /// </summary>
-        internal readonly SymbolTable Table;
+        readonly SymbolTable Table;
 
         /// <summary>
         /// The stack.
         /// </summary>
-        internal readonly Stack<LLVMValueRef> Stack;
+        readonly Stack<LLVMValueRef> Stack;
 
         /// <summary>
         /// The LLVM module reference.
         /// </summary>
-        internal LLVMModuleRef Module;
+        LLVMModuleRef LLVMModule;
 
         /// <summary>
         /// The LLVM builder reference.
         /// </summary>
-        internal LLVMBuilderRef Builder;
+        LLVMBuilderRef Builder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoreLLVMCompiler"/> class.
         /// </summary>
         /// <param name="root">The AST root.</param>
-        LoreLLVMCompiler (AstRoot root, string module = null) {
-            LLVM.LinkInMCJIT ();
-            LLVM.InitializeNativeTarget ();
-            LLVM.InitializeNativeAsmParser ();
-            LLVM.InitializeNativeAsmPrinter ();
-            LLVM.InitializeNativeDisassembler ();
+        LoreLLVMCompiler (AstRoot root, LoreModule module, SymbolTable table = null) {
+
+            // Initialize x86 target
+            LLVM.InitializeX86Target ();
+            LLVM.InitializeX86TargetInfo ();
+            LLVM.InitializeX86AsmPrinter ();
+            LLVM.InitializeX86TargetMC ();
+
+            // Assign parameters
             Root = root;
-            Table = SymbolTable.Create ();
+            LoreModule = module;
+            Table = table ?? SymbolTable.Create ();
+
+            // Create the type helper
             Helper = TypeHelper.Create (this);
-            Stack = new Stack<LLVMValueRef> ();
+
+            // Create the stack
+            Stack = new Stack<LLVMValueRef> (capacity: 512);
+
+            // Create LLVM constants
             LLVMFalse = new LLVMBool (0);
             LLVMTrue = new LLVMBool (1);
             LLVMNull = new LLVMValueRef (IntPtr.Zero);
+
+            // Create the LLVM IR builder
             Builder = LLVM.CreateBuilder ();
-            Module = LLVM.ModuleCreateWithName (module ?? "__anonymous__");
+
+            // Create the LLVM module
+            LLVMModule = LLVM.ModuleCreateWithName (module.Name);
             PrototypeCompiler.Analyze (this, root);
         }
 
-        public static LoreLLVMCompiler Create (AstRoot root, string moduleName = null) {
-            return new LoreLLVMCompiler (root, moduleName);
+        public static LoreLLVMCompiler Create (AstRoot root, LoreModule module) {
+            return new LoreLLVMCompiler (root, module);
+        }
+
+        public static LoreLLVMCompiler Create (SymbolTable symbols, AstRoot root, LoreModule module) {
+            return new LoreLLVMCompiler (root, module, symbols);
         }
 
         public static LoreLLVMCompiler CreateFromFile (string fileName) {
@@ -91,7 +114,7 @@ namespace Lore {
                 var punit = ParsingUnit.Create (lexemes);
                 var parser = LoreParser.Create (punit);
                 var ast = parser.Parse ();
-                return Create (ast, Path.GetFileNameWithoutExtension (fileName));
+                return Create (ast, LoreModule.Create (fileName));
             } catch (LoreException e) {
                 Console.WriteLine (e.Message);
                 throw;
@@ -107,8 +130,9 @@ namespace Lore {
             try {
                 Root.Visit (this);
                 IntPtr lastError;
-                LLVM.VerifyModule (Module, LLVMVerifierFailureAction.LLVMPrintMessageAction, out lastError);
+                LLVM.VerifyModule (LLVMModule, LLVMVerifierFailureAction.LLVMPrintMessageAction, out lastError);
 
+                /* Probably superfluous
                 var pm = new PassManager ();
                 pm.AddVerifierPass ();
                 pm.AddBasicAliasAnalysisPass ();
@@ -120,17 +144,18 @@ namespace Lore {
                 pm.AddScalarizerPass ();
                 pm.AddIPConstantPropagationPass ();
                 pm.InitializeFunctionPassManager ();
-                pm.RunPassManager (Module);
-                Console.WriteLine ("\nLLVM Module Dump:");
-                LLVM.PrintModuleToFile (Module, "test.s", out lastError);
+                pm.RunPassManager (LLVMModule);
+                */
+                LLVM.PrintModuleToFile (LLVMModule, $"{LoreModule.Name}.s", out lastError);
             } catch (LoreException e) {
                 Console.WriteLine (e.Message);
                 //Console.WriteLine ("\nStack trace:");
                 //Console.WriteLine (e.StackTrace);
             } catch (Exception e) {
+                Console.WriteLine ("\nLLVM Module Dump:");
                 Console.WriteLine ($"Fatal exception: ${e.Message}");
             }
-            LLVM.DumpModule (Module);
+            LLVM.DumpModule (LLVMModule);
         }
 
         public override void Accept (AstRoot root) {
@@ -181,6 +206,11 @@ namespace Lore {
         public override void Accept (TupleExpression tuple) {
             base.Accept (tuple);
             CompileTuple (tuple);
+        }
+
+        public override void Accept (StringExpression expr) {
+            base.Accept (expr);
+            CompileString (expr);
         }
     }
 }
