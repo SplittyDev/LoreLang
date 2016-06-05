@@ -136,8 +136,7 @@ namespace Lore {
             if (CompareType (targetType, StringType)) {
                 LLVMValueRef indices;
                 var gep = LLVM.BuildGEP (builder, elem, out indices, 0u, "tmpgep");
-                var ptr = LLVM.ConstIntToPtr (LLVM.ConstInt (Int64Type, (ulong) elem.Pointer.ToInt64 (), new LLVMBool (0)), StringType);
-                //var ptr = LLVM.BuildPointerCast (builder, gep, StringType, "tmpptrcast");
+                var ptr = LLVM.BuildPointerCast (builder, gep, StringType, "tmpptrcast");
                 return ptr;
             }
 

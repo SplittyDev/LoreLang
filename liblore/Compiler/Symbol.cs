@@ -70,6 +70,46 @@ namespace Lore {
         public bool IsMutable => ismutable;
 
         /// <summary>
+        /// The isanonymous.
+        /// </summary>
+        bool isanonymous;
+
+        /// <summary>
+        /// Gets the is anonymous.
+        /// </summary>
+        /// <value>The is anonymous.</value>
+        public bool IsAnonymous => isanonymous;
+
+        /// <summary>
+        /// The specialvalue.
+        /// </summary>
+        SpecialValue specialvalue;
+
+        /// <summary>
+        /// Gets the is string.
+        /// </summary>
+        /// <value>The is string.</value>
+        public bool IsString => specialvalue == SpecialValue.String;
+
+        /// <summary>
+        /// Gets the is enumeration.
+        /// </summary>
+        /// <value>The is enumeration.</value>
+        public bool IsEnumeration => specialvalue == SpecialValue.Enumeration;
+
+        /// <summary>
+        /// Gets the is boolean.
+        /// </summary>
+        /// <value>The is boolean.</value>
+        public bool IsBoolean => specialvalue == SpecialValue.Boolean;
+
+        /// <summary>
+        /// Gets the is structure.
+        /// </summary>
+        /// <value>The is structure.</value>
+        public bool IsStructure => specialvalue == SpecialValue.Structure;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:Lore.Symbol"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
@@ -96,8 +136,25 @@ namespace Lore {
         /// <param name="name">Name.</param>
         /// <param name="value">Value.</param>
         /// <param name="location">Location.</param>
-        public static Symbol CreateMutable (string name, LLVMValueRef value, SourceLocation location, bool mutable = false)
+        public static Symbol CreateMutable (string name, LLVMValueRef value, SourceLocation location)
         => Create (name, value, location, true);
+
+        /// <summary>
+        /// Creates a new symbol.
+        /// </summary>
+        /// <returns>The anonymous.</returns>
+        /// <param name="value">Value.</param>
+        public static Symbol CreateAnonymous (LLVMValueRef value)
+        => new Symbol (string.Empty, value) { isanonymous = true };
+
+        /// <summary>
+        /// Creates a new symbol.
+        /// </summary>
+        /// <returns>The anonymous.</returns>
+        /// <param name="value">Value.</param>
+        /// <param name="flag">Flag.</param>
+        public static Symbol CreateAnonymous (LLVMValueRef value, SpecialValue flag)
+        => new Symbol (string.Empty, value) { isanonymous = true, specialvalue = flag };
 
         /// <summary>
         /// Creates a new symbol.

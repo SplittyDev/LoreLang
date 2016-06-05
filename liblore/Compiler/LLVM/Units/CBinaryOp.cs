@@ -14,8 +14,8 @@ namespace Lore {
             expr.VisitChildren (this);
 
             // Pop the right value from the stack
-            var right = Stack.Pop ();
-            var left = Stack.Pop ();
+            var right = Stack.Pop ().Value;
+            var left = Stack.Pop ().Value;
             LLVMValueRef result = LLVMNull;
 
             Func<LoreException> BuildUnsupportedBinaryOperationException = () => {
@@ -102,7 +102,7 @@ namespace Lore {
                 throw BuildUnsupportedBinaryOperationException ();
             }
 
-            Stack.Push (result);
+            Stack.Push (Symbol.CreateAnonymous (result));
         }
     }
 }

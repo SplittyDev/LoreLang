@@ -104,6 +104,7 @@
     <Compile Include="Compiler\LLVM\Units\CString.cs" />
     <Compile Include="ModuleResolver.cs" />
     <Compile Include="LoreModule.cs" />
+    <Compile Include="SpecialValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lexer\" />

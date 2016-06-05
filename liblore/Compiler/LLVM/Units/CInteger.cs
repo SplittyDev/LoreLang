@@ -19,7 +19,7 @@ namespace Lore {
 
             // Create a constant integer from the specified expression
             var val = LLVM.ConstInt (intType, expr.Value, signExtend);
-            Stack.Push (val);
+            Stack.Push (Symbol.CreateAnonymous (val));
         }
     }
 }

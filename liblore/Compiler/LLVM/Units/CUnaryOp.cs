@@ -14,7 +14,7 @@ namespace Lore {
             expr.VisitChildren (this);
 
             // Pop the right value from the stack
-            var right = Stack.Pop ();
+            var right = Stack.Pop ().Value;
             LLVMValueRef result = LLVMNull;
 
             Func<LoreException> BuildUnsupportedUnaryOperationException = () => {
@@ -52,7 +52,7 @@ namespace Lore {
                 throw BuildUnsupportedUnaryOperationException ();
             }
 
-            Stack.Push (result);
+            Stack.Push (Symbol.CreateAnonymous (result));
         }
     }
 }

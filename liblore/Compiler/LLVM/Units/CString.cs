@@ -16,7 +16,7 @@ namespace Lore {
             LLVM.SetGlobalConstant (val, true);
             var str = LLVM.ConstString (expr.Value, strlen, false);
             LLVM.SetInitializer (val, str);
-            Stack.Push (val);
+            Stack.Push (Symbol.CreateAnonymous (val, SpecialValue.String));
         }
     }
 }

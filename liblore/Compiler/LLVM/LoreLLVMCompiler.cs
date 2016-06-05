@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
 using LexDotNet;
 using LLVMSharp;
 
@@ -50,7 +48,7 @@ namespace Lore {
         /// <summary>
         /// The stack.
         /// </summary>
-        readonly Stack<LLVMValueRef> Stack;
+        readonly Stack<Symbol> Stack;
 
         /// <summary>
         /// The LLVM module reference.
@@ -73,6 +71,7 @@ namespace Lore {
             LLVM.InitializeX86TargetInfo ();
             LLVM.InitializeX86AsmPrinter ();
             LLVM.InitializeX86TargetMC ();
+            LLVM.LinkInMCJIT ();
 
             // Assign parameters
             Root = root;
@@ -83,7 +82,7 @@ namespace Lore {
             Helper = TypeHelper.Create (this);
 
             // Create the stack
-            Stack = new Stack<LLVMValueRef> (capacity: 512);
+            Stack = new Stack<Symbol> (capacity: 512);
 
             // Create LLVM constants
             LLVMFalse = new LLVMBool (0);
@@ -95,7 +94,6 @@ namespace Lore {
 
             // Create the LLVM module
             LLVMModule = LLVM.ModuleCreateWithName (module.Name);
-            PrototypeCompiler.Analyze (this, root);
         }
 
         public static LoreLLVMCompiler Create (AstRoot root, LoreModule module) {
@@ -126,8 +124,35 @@ namespace Lore {
 
         delegate int MainFunctionDelegate (int args);
 
+        void BuildStub () {
+            var entryType = LLVM.FunctionType (
+                ReturnType: LLVM.Int32Type (),
+                ParamTypes: new LLVMTypeRef [0],
+                IsVarArg: false
+            );
+            var entryFunc = LLVM.AddFunction (LLVMModule, "__lore_entrypoint__", entryType);
+            LLVM.SetLinkage (entryFunc, LLVMLinkage.LLVMExternalLinkage);
+            PrototypeCompiler.Analyze (this, Root);
+            var entryBlock = LLVM.AppendBasicBlock (entryFunc, "entry");
+            LLVM.PositionBuilderAtEnd (Builder, entryBlock);
+            var mainFunc = LLVM.GetNamedFunction (LLVMModule, "main");
+            if (mainFunc.Pointer == IntPtr.Zero) {
+                Console.WriteLine ("No main function found!");
+                LLVM.BuildRet (Builder, LLVM.ConstInt (LLVM.Int32Type (), 0, LLVMFalse));
+            } else {
+                Console.WriteLine ("Main function found!");
+                var callResult = LLVM.BuildCall (Builder, mainFunc, new LLVMValueRef [0], "callmain");
+                if (Helper.CompareType (callResult, LLVM.Int32Type ())) {
+                    LLVM.BuildRet (Builder, callResult);
+                } else {
+                    LLVM.BuildRet (Builder, LLVM.ConstInt (LLVM.Int32Type (), 0, LLVMFalse));
+                }
+            }
+        }
+
         public void Compile () {
             try {
+                BuildStub ();
                 Root.Visit (this);
                 IntPtr lastError;
                 LLVM.VerifyModule (LLVMModule, LLVMVerifierFailureAction.LLVMPrintMessageAction, out lastError);

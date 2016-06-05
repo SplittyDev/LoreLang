@@ -27,12 +27,12 @@ namespace Lore {
                 var args = new LLVMValueRef [Math.Max (call.Arguments.Count, 0)];
                 for (var i = 0; i < args.Length; i++) {
                     call.Arguments.Arguments [i].Visit (this);
-                    args [i] = Stack.Pop ();
+                    args [i] = Stack.Pop ().Value;
                 }
 
                 // The function is in scope
                 var callResult = LLVM.BuildCall (Builder, sym.Value, args, "tmpcall");
-                Stack.Push (callResult);
+                Stack.Push (Symbol.CreateAnonymous (callResult));
             } else {
                 throw LoreException.Create (Location).Describe ($"Attempt to call something that is everything but a function.");
             }

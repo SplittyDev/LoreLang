@@ -22,7 +22,7 @@ namespace Lore {
             // TODO: Check if the variable was captured
 
             // Push the variable
-            Stack.Push (sym.Value);
+            Stack.Push (Symbol.CreateAnonymous (sym.Value));
         }
     }
 }

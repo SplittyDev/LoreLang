@@ -158,7 +158,7 @@ namespace Lore {
                 for (var i = 0; i < elems.Length; i++) {
                     
                     // Pop the element from the stack
-                    var current = Stack.Pop ();
+                    var current = Stack.Pop ().Value;
 
                     // Check if the current element is a defined symbol
                     if (Table.FindSymbolByRef (current, out sym)) {
@@ -185,7 +185,7 @@ namespace Lore {
 
                 // There are elements on the stack
                 // Take the top element from the stack
-                var elem = Stack.Pop ();
+                var elem = Stack.Pop ().Value;
 
                 // Check if the return element is a defined symbol
                 if (Table.FindSymbolByRef (elem, out sym)) {
@@ -197,8 +197,6 @@ namespace Lore {
                         elem = LLVM.BuildLoad (Builder, elem, "tmpload");
                     }
                 }
-
-                Console.WriteLine ($"Elem: {elem}");
 
                 Helper.BuildOptimalReturn (Builder, elem, returnType);
             } else {

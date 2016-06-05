@@ -30,7 +30,7 @@ namespace Lore {
             expr.Visit (this);
 
             // Get the expression value and type
-            var exprVal = Stack.Pop ();
+            var exprVal = Stack.Pop ().Value;
             var exprValType = exprVal.TypeOf ();
 
             // Check if the identifier has a type
@@ -57,9 +57,7 @@ namespace Lore {
 
             // Add the variable to the symbol table
             var name = identifier.Name.Name;
-            sym = stmt.Mutable
-                  ? Symbol.CreateMutablePtr (name, ptr, Location)
-                  : Symbol.CreatePtr (name, ptr, Location);
+            sym = Symbol.CreatePtr (name, ptr, Location, stmt.Mutable);
             Table.AddSymbol (sym);
         }
     }

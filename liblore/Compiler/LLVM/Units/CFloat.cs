@@ -15,7 +15,7 @@ namespace Lore {
             // to float if requested.
             // That way we should not lose any information.
             var val = LLVM.ConstReal (LLVM.DoubleType (), expr.Value);
-            Stack.Push (val);
+            Stack.Push (Symbol.CreateAnonymous (val));
         }
     }
 }
